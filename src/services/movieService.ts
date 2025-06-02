@@ -3,13 +3,14 @@ import type { Movie } from "../types/movie";
 
 interface Response {
     results: Movie[];
+    total_pages: number;
 }
 
 const API_KEY = import.meta.env.VITE_TMDB_TOKEN as string;
 const url = 'https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1';
 
 
-export async function fetchMovies(query:string):Promise<Movie[]> {
+export async function fetchMovies(query:string , currentPage:number):Promise<Response> {
     try {
         const response = await axios.get<Response>(url, {
             method: 'GET',
@@ -21,10 +22,14 @@ export async function fetchMovies(query:string):Promise<Movie[]> {
                 query: query,
                 include_adult: false,
                 language: 'en-US',
+                page: currentPage
             }
         });
+        console.log(response);
         
-        return response.data.results;
+        return response.data;
+          
+          
     }
     catch(error) {
         console.error('Failed to fetch movies:', error);
